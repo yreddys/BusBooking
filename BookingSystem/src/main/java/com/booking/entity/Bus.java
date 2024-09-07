@@ -71,4 +71,11 @@ public class Bus {
 	public void setSeatLayout(List<List<Integer>> seatLayout) {
 		this.seatLayout = seatLayout;
 	}
+
+	@Override
+	public String toString() {
+		return "Bus [id=" + id + ", busNumber=" + busNumber + ", source=" + source + ", destination=" + destination
+				+ ", totalSeats=" + totalSeats + ", seatLayout=" + seatLayout + "]";
+	}
+	
 }

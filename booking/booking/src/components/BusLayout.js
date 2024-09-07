@@ -22,6 +22,7 @@ const BusLayout = () => {
   const handleSeatClick = (rowIndex, seatIndex) => {
     const seatStatus = seatLayout[rowIndex][seatIndex];
     if (seatStatus === 0) {
+      // Send zero-based indices to the backend (rowIndex and seatIndex start from 0)
       setSelectedSeats([...selectedSeats, { row: rowIndex, seat: seatIndex }]);
     } else {
       alert('Seat not available');
@@ -52,9 +53,9 @@ const BusLayout = () => {
                 margin: '5px',
                 cursor: seat === 0 ? 'pointer' : 'not-allowed'
               }}
-              onClick={() => handleSeatClick(rowIndex, seatIndex)}
+              onClick={() => handleSeatClick(rowIndex, seatIndex)}  // Zero-based rowIndex and seatIndex
             >
-              {seatIndex + 1}
+              {seatIndex + 1}  {/* Display one-based index for the user */}
             </div>
           ))
         ))}

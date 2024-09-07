@@ -32,4 +32,10 @@ public class Seat {
     public void setSeat(int seat) {
         this.seat = seat;
     }
+
+	@Override
+	public String toString() {
+		return "Seat [seatRow=" + seatRow + ", seat=" + seat + "]";
+	}
+    
 }

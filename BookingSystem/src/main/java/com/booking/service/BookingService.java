@@ -6,13 +6,16 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.booking.entity.Booking;
 import com.booking.entity.Bus;
 import com.booking.entity.Seat;
+
 import com.booking.model.BookingRequest;
 import com.booking.repository.BookingRepository;
 import com.booking.repository.BusRepository;
+import com.booking.service.exception.SeatAlreadyBookedException;
 
 @Service
 public class BookingService {
@@ -24,6 +27,7 @@ public class BookingService {
     private BusRepository busRepository;
 
     // Create a booking for a bus
+    @Transactional
     public String createBooking(BookingRequest bookingRequest) {
         // Find the bus by ID
         Bus bus = busRepository.findById(bookingRequest.getBusId())
@@ -34,10 +38,13 @@ public class BookingService {
         List<List<Integer>> seatLayout = bus.getSeatLayout();
 
         for (Seat seat : selectedSeats) {
-            if (seatLayout.get(seat.getSeatRow()).get(seat.getSeatRow()) == 0) {
-                seatLayout.get(seat.getSeatRow()).set(seat.getSeatRow(), 1);  // Mark the seat as booked (1)
+            // Check if the seat is available (0 = available, 1 = booked)
+            if (seatLayout.get(seat.getSeatRow()).get(seat.getSeat()) == 0) {
+                // Mark the seat as booked (1)
+                seatLayout.get(seat.getSeatRow()).set(seat.getSeat(), 1);
             } else {
-                throw new RuntimeException("Some seats are already booked or unavailable.");
+                // Throw a custom exception if any seat is already booked
+                throw new SeatAlreadyBookedException("Seat at Row " + (seat.getSeatRow() + 1) + ", Seat " + (seat.getSeat() + 1) + " is already booked or unavailable.");
             }
         }
 
@@ -56,7 +63,7 @@ public class BookingService {
         // Save the booking
         bookingRepository.save(booking);
 
-        // Update the bus's seat layout
+        // Update the bus's seat layout after confirming seat booking
         bus.setSeatLayout(seatLayout);
         busRepository.save(bus);
 
