@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.booking.entity.Booking;
 import com.booking.entity.Bus;
 import com.booking.entity.Seat;
-
 import com.booking.model.BookingRequest;
 import com.booking.repository.BookingRepository;
 import com.booking.repository.BusRepository;
@@ -26,7 +25,6 @@ public class BookingService {
     @Autowired
     private BusRepository busRepository;
 
-    // Create a booking for a bus
     @Transactional
     public String createBooking(BookingRequest bookingRequest) {
         // Find the bus by ID
@@ -38,12 +36,12 @@ public class BookingService {
         List<List<Integer>> seatLayout = bus.getSeatLayout();
 
         for (Seat seat : selectedSeats) {
-            // Check if the seat is available (0 = available, 1 = booked)
+            // Adjusting for zero-based indexing (already zero-based in the frontend)
             if (seatLayout.get(seat.getSeatRow()).get(seat.getSeat()) == 0) {
                 // Mark the seat as booked (1)
                 seatLayout.get(seat.getSeatRow()).set(seat.getSeat(), 1);
             } else {
-                // Throw a custom exception if any seat is already booked
+                // Use zero-based indices internally but display one-based indices in the error message
                 throw new SeatAlreadyBookedException("Seat at Row " + (seat.getSeatRow() + 1) + ", Seat " + (seat.getSeat() + 1) + " is already booked or unavailable.");
             }
         }
