@@ -2,6 +2,7 @@ package com.booking.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +35,29 @@ public class BusController {
     }
 
     // User: Get all available buses between source and destination
+//    @GetMapping("/available")
+//    public ResponseEntity<?> getAvailableBuses(@RequestParam String source, @RequestParam String destination) {
+//        List<Bus> availableBuses = busService.getAvailableBuses(source, destination);
+//        return ResponseEntity.ok(availableBuses);
+//    }
+    
     @GetMapping("/available")
     public ResponseEntity<?> getAvailableBuses(@RequestParam String source, @RequestParam String destination) {
         List<Bus> availableBuses = busService.getAvailableBuses(source, destination);
-        return ResponseEntity.ok(availableBuses);
+
+        // Modify to include availableSeats in response
+        List<Bus> busesWithAvailableSeats = availableBuses.stream()
+                .map(bus -> {
+                    bus.setAvailableSeats(bus.getAvailableSeats()); 
+                    // Ensure available seats are included
+                    return bus;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(busesWithAvailableSeats);
     }
+
+
 
     // Get bus by ID
     @GetMapping("/{busId}")

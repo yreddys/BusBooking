@@ -39,7 +39,7 @@ const CheckBuses = () => {
             <div key={bus.id}>
               <p>{bus.source} to {bus.destination}</p>
               <p>Bus Number: {bus.busNumber}</p>
-              {/* Button to navigate to BusLayout component */}
+              <p>Available Seats: {bus.availableSeats}</p>
               <button onClick={() => handleBookNow(bus.id)}>Book Now</button>
             </div>
           ))}

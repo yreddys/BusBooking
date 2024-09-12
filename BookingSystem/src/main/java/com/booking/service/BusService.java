@@ -25,11 +25,24 @@ public class BusService {
         bus.setDestination(addBusRequest.getDestination());
         bus.setTotalSeats(addBusRequest.getTotalSeats());
 
+        // Initialize available seats to total seats initially
+        bus.setAvailableSeats(addBusRequest.getTotalSeats());
+
         // Initialize seat layout as a 2D array (all seats available)
         List<List<Integer>> seatLayout = createSeatLayout(addBusRequest.getTotalSeats());
         bus.setSeatLayout(seatLayout);
 
         return busRepository.save(bus);  // Save the bus to the database
+    }
+
+    // Reduce available seats after booking
+    public void reduceAvailableSeats(Bus bus, int seatsToBook) {
+        if (bus.getAvailableSeats() >= seatsToBook) {
+            bus.setAvailableSeats(bus.getAvailableSeats() - seatsToBook);  // Reduce available seats
+            busRepository.save(bus);  // Save the updated bus data
+        } else {
+            throw new RuntimeException("Not enough available seats.");
+        }
     }
 
     // Retrieve all available buses between source and destination
@@ -47,7 +60,7 @@ public class BusService {
         // Assuming each row has 10 seats and create rows accordingly
         List<List<Integer>> seatLayout = new ArrayList<>();
         int rows = (int) Math.ceil(totalSeats / 10.0);
-        
+
         for (int i = 0; i < rows; i++) {
             List<Integer> row = new ArrayList<>();
             for (int j = 0; j < 10 && totalSeats > 0; j++) {

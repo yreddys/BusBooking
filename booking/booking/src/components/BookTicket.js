@@ -1,35 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { useParams, useLocation } from 'react-router-dom';
 
 const BookTicket = () => {
-  const { busId } = useParams(); // Get busId from URL params
-  const location = useLocation(); // Get state passed from navigate
+  const { busId } = useParams();
+  const location = useLocation();
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
-  
-  // Access seats passed via navigation
-  const { seats } = location.state || { seats: [] }; // Default to empty array if no seats are passed
 
-  useEffect(() => {
-    console.log('Seats received for booking (zero-based):', seats); // Debugging point
-  }, [seats]);
+  const selectedSeats = location.state?.selectedSeats || [];  // Get selected seats from the previous state
 
   const bookTicket = () => {
-    // Send booking request to the backend
+    const seatObjects = selectedSeats.map(seat => ({
+      seatRow: seat.rowIndex,
+      seat: seat.seatIndex
+    }));
+
     axios.post(`http://localhost:8080/api/booking/bookTicket`, {
       busId,
       userName,
       email,
       age,
-      seats // Pass zero-based indices to the backend
-    })
-    .then(response => {
-      alert(`Booking successful. Your confirmation code is: ${response.data}`);
-    })
-    .catch(error => {
-      console.error('Error booking ticket:', error);
+      seats: seatObjects
+    }).then(response => {
+      alert(response.data);  // Show booking confirmation
+    }).catch(error => {
+      console.error(error);
       alert('Error booking ticket');
     });
   };
@@ -40,20 +37,15 @@ const BookTicket = () => {
       <input type="text" placeholder="Name" value={userName} onChange={(e) => setUserName(e.target.value)} />
       <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} />
+      
+      <h4>Selected Seats:</h4>
+      {selectedSeats.map((seat, index) => (
+        <p key={index}>Row {seat.rowIndex + 1}, Seat {seat.seatIndex + 1}</p>
+      ))}
 
-      <h4>Selected Seats</h4>
-      {/* Render the selected seats (convert zero-based to one-based for display) */}
-      {seats.length > 0 ? (
-        seats.map((seat, index) => (
-          <p key={index}>
-            Row {seat.seatRow + 1}, Seat {seat.seat + 1} {/* Convert zero-based index to one-based for display */}
-          </p>
-        ))
-      ) : (
-        <p>No seats selected</p>
-      )}
-
-      <button onClick={bookTicket}>Confirm Booking</button>
+      <button onClick={bookTicket} disabled={!userName || !email || !age || selectedSeats.length === 0}>
+        Confirm Booking
+      </button>
     </div>
   );
 };

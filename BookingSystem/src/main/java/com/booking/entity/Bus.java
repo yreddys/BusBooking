@@ -11,71 +11,78 @@ import jakarta.persistence.Id;
 @Entity
 public class Bus {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String busNumber; // Unique identifier for the bus
-	private String source; // Start location
-	private String destination; // End location
-	private int totalSeats; // Total number of seats
+    private String busNumber;
+    private String source;
+    private String destination;
 
-	@ElementCollection
-	private List<List<Integer>> seatLayout; // 2D seat layout (0 = available, 1 = booked, 2 = blocked)
+    private int totalSeats;      // Total seats in the bus
+    private int availableSeats;  // Available seats remaining for booking
 
-	// Getters and Setters
-	public Long getId() {
-		return id;
-	}
+    @ElementCollection
+    private List<List<Integer>> seatLayout; // 2D array representing the seat layout (0 = available, 1 = booked)
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Bus() {
+    }
 
-	public String getBusNumber() {
-		return busNumber;
-	}
+    // Getters and Setters
 
-	public void setBusNumber(String busNumber) {
-		this.busNumber = busNumber;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public String getBusNumber() {
+        return busNumber;
+    }
 
-	public String getDestination() {
-		return destination;
-	}
+    public void setBusNumber(String busNumber) {
+        this.busNumber = busNumber;
+    }
 
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    public String getSource() {
+        return source;
+    }
 
-	public int getTotalSeats() {
-		return totalSeats;
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public void setTotalSeats(int totalSeats) {
-		this.totalSeats = totalSeats;
-	}
+    public String getDestination() {
+        return destination;
+    }
 
-	public List<List<Integer>> getSeatLayout() {
-		return seatLayout;
-	}
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
 
-	public void setSeatLayout(List<List<Integer>> seatLayout) {
-		this.seatLayout = seatLayout;
-	}
+    public int getTotalSeats() {
+        return totalSeats;
+    }
 
-	@Override
-	public String toString() {
-		return "Bus [id=" + id + ", busNumber=" + busNumber + ", source=" + source + ", destination=" + destination
-				+ ", totalSeats=" + totalSeats + ", seatLayout=" + seatLayout + "]";
-	}
-	
+    public void setTotalSeats(int totalSeats) {
+        this.totalSeats = totalSeats;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    public List<List<Integer>> getSeatLayout() {
+        return seatLayout;
+    }
+
+    public void setSeatLayout(List<List<Integer>> seatLayout) {
+        this.seatLayout = seatLayout;
+    }
 }

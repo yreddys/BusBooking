@@ -3,49 +3,45 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const BusLayout = () => {
-  const { busId } = useParams(); // Get busId from URL params
-  const [seatLayout, setSeatLayout] = useState([]); // Holds the seat layout fetched from the backend
-  const [selectedSeats, setSelectedSeats] = useState([]); // Holds the selected seats
-  const navigate = useNavigate(); // To navigate to the booking page
+  const { busId } = useParams();  // Get the busId from the route
+  const [seatLayout, setSeatLayout] = useState([]);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const navigate = useNavigate();  // Navigation hook for routing to the next page
 
-  // Fetch seat layout data from the backend when the component is mounted
   useEffect(() => {
+    // Fetch the seat layout for the selected bus from the backend
     axios.get(`http://localhost:8080/api/bus/${busId}`)
       .then(response => {
-        setSeatLayout(response.data.seatLayout); // Set seat layout from backend
+        setSeatLayout(response.data.seatLayout);
       })
       .catch(error => {
-        console.error('Error fetching bus layout:', error); // Debugging point
+        console.log(error);
       });
   }, [busId]);
 
-  // Handle the seat click
+  // Handle seat selection
   const handleSeatClick = (rowIndex, seatIndex) => {
-    const seatStatus = seatLayout[rowIndex][seatIndex]; // Get seat status
-    if (seatStatus === 0) { // 0 means seat is available
-      const alreadySelected = selectedSeats.some(seat => seat.seatRow === rowIndex && seat.seat === seatIndex);
-      if (!alreadySelected) {
-        const newSelectedSeats = [...selectedSeats, { seatRow: rowIndex, seat: seatIndex }]; // Zero-based indices
-        setSelectedSeats(newSelectedSeats); // Add to selectedSeats state
+    const seatStatus = seatLayout[rowIndex][seatIndex];
+    if (seatStatus === 0) {
+      const isAlreadySelected = selectedSeats.some(seat => seat.rowIndex === rowIndex && seat.seatIndex === seatIndex);
+      if (isAlreadySelected) {
+        setSelectedSeats(selectedSeats.filter(seat => !(seat.rowIndex === rowIndex && seat.seatIndex === seatIndex)));
+      } else {
+        setSelectedSeats([...selectedSeats, { rowIndex, seatIndex }]);
       }
     } else {
       alert('Seat not available');
     }
   };
 
-  const proceedToBookTicket = () => {
-    if (selectedSeats.length > 0) {
-      // Pass selectedSeats (zero-based indices) to the booking page
-      navigate(`/book/${busId}`, { state: { seats: selectedSeats } });
-    } else {
-      alert('Please select at least one seat.');
-    }
+  // Proceed to the booking page
+  const handleBooking = () => {
+    navigate(`/book/${busId}`, { state: { selectedSeats } });
   };
 
   return (
     <div style={{ padding: '20px' }}>
       <h3>Select Your Seats</h3>
-      {/* Render the seat layout */}
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${seatLayout[0]?.length || 0}, 1fr)` }}>
         {seatLayout.map((row, rowIndex) => (
           row.map((seat, seatIndex) => (
@@ -54,37 +50,18 @@ const BusLayout = () => {
               style={{
                 width: '40px',
                 height: '40px',
-                backgroundColor: seat === 0 ? 'green' : seat === 1 ? 'red' : 'grey',
+                backgroundColor: seat === 0 ? 'green' : 'red',
                 margin: '5px',
                 cursor: seat === 0 ? 'pointer' : 'not-allowed'
               }}
-              onClick={() => handleSeatClick(rowIndex, seatIndex)} // Handle seat selection
+              onClick={() => handleSeatClick(rowIndex, seatIndex)}
             >
-              {/* Display seat index (one-based for user display) */}
-              {seatIndex + 1} {/* One-based display */}
+              {seatIndex + 1}
             </div>
           ))
         ))}
       </div>
-
-      {/* Display selected seats (convert zero-based to one-based for display) */}
-      <div>
-        <h4>Selected Seats:</h4>
-        {selectedSeats.length > 0 ? (
-          selectedSeats.map((seat, index) => (
-            <p key={index}>
-              Row {seat.seatRow + 1}, Seat {seat.seat + 1}  {/* Convert zero-based index to one-based */}
-            </p>
-          ))
-        ) : (
-          <p>No seats selected</p>
-        )}
-      </div>
-
-      {/* Proceed to booking button */}
-      <button onClick={proceedToBookTicket} style={{ marginTop: '20px' }}>
-        Proceed to Book Ticket
-      </button>
+      <button onClick={handleBooking} disabled={selectedSeats.length === 0}>Book Selected Seats</button>
     </div>
   );
 };
