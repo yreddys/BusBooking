@@ -77,4 +77,27 @@ public class BookingService {
     private String generateConfirmationCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();  // Simple random code
     }
+    
+    @Transactional
+    public void cancelBooking(String confirmationCode) {
+        // Fetch the booking by confirmation code
+        Booking booking = bookingRepository.findByConfirmationCode(confirmationCode)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // Fetch the bus associated with the booking
+        Bus bus = booking.getBus();
+        List<List<Integer>> seatLayout = bus.getSeatLayout();
+
+        // Mark booked seats as available again (set to 0)
+        for (Seat seat : booking.getSeats()) {
+            seatLayout.get(seat.getSeatRow()).set(seat.getSeat(), 0);
+        }
+
+        // Save the updated seat layout
+        bus.setSeatLayout(seatLayout);
+        busRepository.save(bus);
+
+        // Remove the booking
+        bookingRepository.delete(booking);
+    }
 }

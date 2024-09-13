@@ -58,4 +58,14 @@ public class BookingController {
             return ResponseEntity.status(404).body("Booking not found");
         }
     }
+    
+    @PostMapping("/cancel/{confirmationCode}")
+    public ResponseEntity<?> cancelBooking(@PathVariable String confirmationCode) {
+        try {
+            bookingService.cancelBooking(confirmationCode);
+            return ResponseEntity.ok("Booking canceled and seat(s) made available.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error during cancellation: " + e.getMessage());
+        }
+    }
 }
