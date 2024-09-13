@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import CancelBooking from './CancelBooking'; // Import the new component
 
 const GetTicket = () => {
   const [confirmationCode, setConfirmationCode] = useState('');
   const [ticketDetails, setTicketDetails] = useState(null);
-  const [cancelConfirmationCode, setCancelConfirmationCode] = useState('');
-  const [cancelStatus, setCancelStatus] = useState('');
 
   const getTicket = () => {
     axios.get(`http://localhost:8080/api/booking/getTicket/${confirmationCode}`)
@@ -15,18 +14,6 @@ const GetTicket = () => {
       .catch(error => {
         console.log(error);
         alert('Ticket not found');
-      });
-  };
-
-  const cancelBooking = () => {
-    axios.post(`http://localhost:8080/api/booking/cancel/${cancelConfirmationCode}`)
-      .then(response => {
-        setCancelStatus(response.data);
-        setTicketDetails(null); // Clear ticket details after successful cancellation
-      })
-      .catch(error => {
-        console.log(error);
-        setCancelStatus('Cancellation failed: ' + error.message);
       });
   };
 
@@ -40,7 +27,7 @@ const GetTicket = () => {
         onChange={(e) => setConfirmationCode(e.target.value)}
       />
       <button onClick={getTicket}>Get Ticket</button>
-      
+
       {ticketDetails && (
         <div>
           <h3>Ticket Details</h3>
@@ -52,20 +39,8 @@ const GetTicket = () => {
         </div>
       )}
 
-      <h2>Cancel Your Booking</h2>
-      <input
-        type="text"
-        placeholder="Enter Confirmation Code"
-        value={cancelConfirmationCode}
-        onChange={(e) => setCancelConfirmationCode(e.target.value)}
-      />
-      <button onClick={cancelBooking}>Cancel Booking</button>
-
-      {cancelStatus && (
-        <div>
-          <p>{cancelStatus}</p>
-        </div>
-      )}
+      {/* Use the CancelBooking component here */}
+      <CancelBooking />
     </div>
   );
 };

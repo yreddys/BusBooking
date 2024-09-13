@@ -6,7 +6,7 @@ import GetTicket from './components/GetTicket';
 import CheckBuses from './components/CheckBuses';
 import AddBusForm from './components/AddBusForm';
 import BusLayout from './components/BusLayout';
-
+import CancelBooking from './components/CancelBooking';
 function App() {
   return (
     <Router>
@@ -17,6 +17,7 @@ function App() {
         <Route path="/admin/add-bus" element={<AddBusForm />} />
         <Route path="/book/:busId" element={<BookTicket />} />
         <Route path="/bus/:busId" element={<BusLayout />} />
+        <Route path="/CancelBooking" element={<CancelBooking />} />
       </Routes>
     </Router>
   );
