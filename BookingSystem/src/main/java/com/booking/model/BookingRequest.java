@@ -7,12 +7,8 @@ import com.booking.entity.Seat;
 public class BookingRequest {
 
 	private Long busId; // ID of the bus being booked
-	private String userName; // Name of the person booking
-	private String email; // Email of the user
-	private int age; // Age of the user
-	private List<Seat> seats; // List of seats being booked
+	private List<SeatRequest> seats;
 
-	// Getters and Setters
 	public Long getBusId() {
 		return busId;
 	}
@@ -21,35 +17,23 @@ public class BookingRequest {
 		this.busId = busId;
 	}
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public List<Seat> getSeats() {
+	public List<SeatRequest> getSeats() {
 		return seats;
 	}
 
-	public void setSeats(List<Seat> seats) {
+	public void setSeats(List<SeatRequest> seats) {
 		this.seats = seats;
 	}
+
+	public BookingRequest(Long busId, List<SeatRequest> seats) {
+
+		this.busId = busId;
+		this.seats = seats;
+	}
+
+	@Override
+	public String toString() {
+		return "BookingRequest [busId=" + busId + ", seats=" + seats + "]";
+	}
+
 }

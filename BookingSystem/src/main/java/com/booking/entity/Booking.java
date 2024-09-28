@@ -2,12 +2,15 @@ package com.booking.entity;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Booking {
@@ -16,16 +19,23 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String confirmationCode; // Code given to the user after successful booking
-    private String userName;         // Name of the person booking
-    private String email;            // Email of the user
-    private int age;                 // Age of the user
-
-    @ManyToOne
-    private Bus bus;                 // The bus that the user booked
-
+    // List of confirmation codes for each seat
     @ElementCollection
-    private List<Seat> seats;        // List of seats booked (row, seat number)
+    private List<String> confirmationCodes;
+
+    // Booking details
+    private String userName;
+    private String email;
+    private int age;
+
+    // Reference to the bus for this booking
+    @ManyToOne
+    private Bus bus;
+
+    // List of seats for this booking
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "booking_id") // This will create a foreign key in the Seat table
+    private List<Seat> seats;
 
     // Getters and Setters
     public Long getId() {
@@ -36,12 +46,12 @@ public class Booking {
         this.id = id;
     }
 
-    public String getConfirmationCode() {
-        return confirmationCode;
+    public List<String> getConfirmationCodes() {
+        return confirmationCodes;
     }
 
-    public void setConfirmationCode(String confirmationCode) {
-        this.confirmationCode = confirmationCode;
+    public void setConfirmationCodes(List<String> confirmationCodes) {
+        this.confirmationCodes = confirmationCodes;
     }
 
     public String getUserName() {
@@ -84,11 +94,9 @@ public class Booking {
         this.seats = seats;
     }
 
-	@Override
-	public String toString() {
-		return "Booking [id=" + id + ", confirmationCode=" + confirmationCode + ", userName=" + userName + ", email="
-				+ email + ", age=" + age + ", bus=" + bus + ", seats=" + seats + "]";
-	}
-    
+    @Override
+    public String toString() {
+        return "Booking [id=" + id + ", confirmationCodes=" + confirmationCodes + ", userName=" + userName
+                + ", email=" + email + ", age=" + age + ", bus=" + bus + ", seats=" + seats + "]";
+    }
 }
-
