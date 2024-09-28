@@ -25,4 +25,11 @@ public class PaymentCompletionRequest {
 	public void setConfirmationCode(String confirmationCode) {
 		this.confirmationCode = confirmationCode;
 	}
+
+	@Override
+	public String toString() {
+		return "PaymentCompletionRequest [paymentId=" + paymentId + ", confirmationCode=" + confirmationCode + "]";
+	}
+	
+	
 }
