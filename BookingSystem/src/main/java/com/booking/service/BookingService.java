@@ -36,16 +36,18 @@ public class BookingService {
         List<List<Integer>> seatLayout = bus.getSeatLayout();
 
         for (Seat seat : selectedSeats) {
-            // Adjusting for zero-based indexing (already zero-based in the frontend)
             if (seatLayout.get(seat.getSeatRow()).get(seat.getSeat()) == 0) {
                 // Mark the seat as booked (1)
                 seatLayout.get(seat.getSeatRow()).set(seat.getSeat(), 1);
             } else {
-                // Use zero-based indices internally but display one-based indices in the error message
                 throw new SeatAlreadyBookedException("Seat at Row " + (seat.getSeatRow() + 1) + ", Seat " + (seat.getSeat() + 1) + " is already booked or unavailable.");
             }
         }
 
+        // Reduce the total available seats count
+        int remainingSeats = bus.getTotalSeats() - selectedSeats.size();
+        bus.setTotalSeats(remainingSeats);  // Update total available seats
+        
         // Generate confirmation code
         String confirmationCode = generateConfirmationCode();
 
@@ -93,6 +95,10 @@ public class BookingService {
             seatLayout.get(seat.getSeatRow()).set(seat.getSeat(), 0);
         }
 
+        // Increase the total available seats count by the number of seats in the canceled booking
+        int updatedTotalSeats = bus.getTotalSeats() + booking.getSeats().size();
+        bus.setTotalSeats(updatedTotalSeats);
+
         // Save the updated seat layout
         bus.setSeatLayout(seatLayout);
         busRepository.save(bus);
@@ -100,4 +106,5 @@ public class BookingService {
         // Remove the booking
         bookingRepository.delete(booking);
     }
+
 }
